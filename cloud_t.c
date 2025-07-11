@@ -8,15 +8,17 @@
 #include <unistd.h>
 
 
-#define PORT 8888
-#define BUFFER_SIZE 8192
+#define PORT 8888    //Port for HTTP Server
+#define BUFFER_SIZE 8192 
 #define MAX_ITEMS 100
 
+//Defined struct; represents item in database
 typedef struct {
 	char id[64];
 	char *json;
 } Item;
 
+// Holds incoming POST/PUT request during upload
 typedef struct {
 	char *post_data;
 	size_t post_data_size;
@@ -32,6 +34,7 @@ Item database[MAX_ITEMS];
 int item_count = 0;
 int id_counter = 1;
 
+//Generates new unique ID as string
 const char *gen_id() {
 	static char id[16];
 	snprintf(id, sizeof(id), "%d", id_counter++);
@@ -66,7 +69,7 @@ static enum MHD_Result answer_to_connection(void *cls,
 		printf("Received %s request for URL : %s\n", method, url);
 		fflush(stdout);
 
-		return MHD_YES;
+		return MHD_YES;  //waits for data if needed
 	}
 
 	if (*upload_data_size != 0) {
@@ -93,7 +96,7 @@ static enum MHD_Result answer_to_connection(void *cls,
 		}
 
 
-
+                // Checks ability to store more items
 		if (item_count >= MAX_ITEMS) {
 			json_decref(root);
 			free(con_info->post_data);
@@ -101,6 +104,7 @@ static enum MHD_Result answer_to_connection(void *cls,
 			return send_response(connection, "{\"error\":\"Database full\"}", 500);
 		}
 
+		//stores new item
 		const char *id = gen_id();
 		strncpy(database[item_count].id, id, sizeof(database[item_count].id));
 		database[item_count].id[sizeof(database[item_count].id) -1] = '\0';
@@ -145,7 +149,7 @@ static enum MHD_Result answer_to_connection(void *cls,
 	return send_response(connection, "{\"error\":\"Method Unsupported\"}", 405);
 }
 
-
+//starts HTTP server daemon
 int main() {
 	struct MHD_Daemon *daemon;
 
@@ -155,6 +159,7 @@ int main() {
 		 return 1;
 	}
 
+	//keeps server running
 	printf("Server running on http://localhost:%d/\n", PORT);
 	while (1) {
 		sleep(1);
