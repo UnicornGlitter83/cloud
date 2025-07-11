@@ -1,4 +1,4 @@
-// cc -o cloud_t cloud_t.c
+// cc -o cloud_t cloud_t.c -lmicrohttpd -ljansson
 
 #include <microhttpd.h>
 #include <jansson.h>
