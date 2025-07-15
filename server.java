@@ -1,6 +1,6 @@
 //compile with   javac -cp .:json-20230618.jar:mysql-connector-j-9.3.0.jar server.java
 //run with       java -cp .:json-20230618.jar:mysql-connector-j-9.3.0.jar server
-//URL		 http://18.116.46.202:8000/ 
+//URL		 http://18.116.46.202:8000/
 
 
 import com.sun.net.httpserver.*;
@@ -79,9 +79,25 @@ public class server	{
 	}
 	
 	private static void handleGet(HttpExchange exchange, Connection conn, String path) throws IOException, SQLException {
+		if (path.equals("/") || path.equals("")) {
+			PreparedStatement stmt = conn.prepareStatement ("Select id, data from items");
+			ResultSet rs = stmt.executeQuery();
+
+			StringBuilder json = new StringBuilder("[");
+			while (rs.next()) {
+				if(json.length() > 1) json.append(",");
+				json.append("{\"id\":").append(rs.getInt("id")).append(",");
+				json.append("\"data\":").append(rs.getString("data")).append("}");
+			}
+			json.append("]");
+
+			sendResponse(exchange, 200, json.toString());
+			return;
+		}
+
 		String id = path.replaceFirst("/", "");
 		if (!id.matches("\\d+")) {
-			sendResponse(exchange, 400, "{\"error\":\"Invalid ID\"}");
+			sendResponse(exchange, 400, "{\"error\":\"Invalid id\"}");
 			return;
 		}
 		
