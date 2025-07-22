@@ -1,0 +1,36 @@
+Server.java - communication in the cloud  
+  
+Compile with:   
+  
+ javac -cp .:json-20230618.jar:mysql-connector-j-9.3.0.jar server.java  
+  
+  
+Run with:  
+  
+java -cp .:json-20230618.jar:mysql-connector-j-9.3.0.jar server  
+  
+  
+URL:            http://18.116.46.202:8000/  
+  
+  
+  
+*Hosted on AWS EC2. Data is stored in a MariaDB database on EC2 instance.  
+  
+  
+*Add new item:  
+curl -X POST -H "Content-Type: application/json" -d '{"data":"new item"}' http://18.116.46.202:8000/  
+  
+*Update item with id=N:  
+curl -X PUT -H "Content-Type: application/json" -d '{"id":N, "data":"updated"}' http://18.116.46.202:8000/  
+  
+*Get item with id=N:  
+curl -X GET http://18.116.46.202:8000/N  
+  
+*Get all items:  
+curl -X GET http://18.116.46.202:8000/  
+  
+*Delete an item with id=N:  
+curl -X DELETE http://18.116.46.202:8000/N  
+  
+  
+  
